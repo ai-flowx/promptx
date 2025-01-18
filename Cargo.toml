@@ -1,0 +1,37 @@
+[package]
+name = "promptx"
+version = "0.1.0"
+edition = "2021"
+rust-version = "1.83.0"
+authors = ["Jia Jia <angersax@sina.com>"]
+include = [
+    "src/**/*",
+    "Cargo.toml",
+    "README.md"
+]
+description = "AI prompt optimization"
+repository = "https://github.com/ai-flowx/promptx"
+documentation = "https://github.com/ai-flowx/promptx"
+homepage = "https://github.com/ai-flowx/promptx"
+keywords = ["ai", "prompt", "optimization"]
+categories = ["database"]
+license = "MIT"
+readme = "README.md"
+
+[[bin]]
+name = "promptx"
+path = "src/main.rs"
+
+[profile.release]
+strip = "debuginfo"
+
+[dependencies]
+clap = "4.5"
+serde = "1.0"
+serde_derive = "1.0"
+serde_yaml = "0.9"
+
+[build-dependencies]
+
+[badges]
+maintenance = { status = "actively-developed" }
