@@ -26,10 +26,13 @@ path = "src/main.rs"
 strip = "debuginfo"
 
 [dependencies]
+chrono = "0.4"
 clap = "4.5"
-serde = "1.0"
+serde = { version = "1.0", features = ["derive"] }
 serde_derive = "1.0"
+serde_json = "1.0"
 serde_yaml = "0.9"
+uuid = { version = "1.0", features = ["v4"] }
 
 [build-dependencies]
 

@@ -1,8 +1,10 @@
 mod arg;
 mod config;
+mod logger;
 
 use arg::arg::Argument;
 use config::config::Config;
+use logger::logger::Logger;
 use std::process;
 
 fn main() {
@@ -24,5 +26,14 @@ fn main() {
     if let Err(err) = c.build() {
         println!("failed to build config: {}", err);
         process::exit(-2);
+    }
+
+    let mut l = Logger {
+        ..Default::default()
+    };
+
+    if let Err(err) = l.run() {
+        println!("failed to run logger: {}", err);
+        process::exit(-3);
     }
 }

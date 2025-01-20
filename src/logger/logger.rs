@@ -1,6 +1,7 @@
+use std::error::Error;
+
 #[derive(Clone, Default)]
-pub struct Logger {
-}
+pub struct Logger {}
 
 impl Logger {
     pub fn run(&mut self) -> Result<(), Box<dyn Error>> {

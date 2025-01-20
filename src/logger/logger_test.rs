@@ -1,3 +1,2 @@
 #[test]
-fn test_logger() {
-}
+fn test_logger() {}
