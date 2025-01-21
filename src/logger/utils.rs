@@ -15,17 +15,17 @@ pub struct MethodArgs<T> {
 }
 
 #[derive(Debug, Serialize)]
-pub struct MethodMeta {
-    execution_time: f64,
-    timestamp: String,
-    method_name: String,
+pub struct MethodResult<T> {
+    pub inputs: Value,
+    pub outputs: T,
+    pub meta: MethodMeta,
 }
 
 #[derive(Debug, Serialize)]
-pub struct MethodResult<T> {
-    inputs: Value,
-    outputs: T,
-    meta: MethodMeta,
+pub struct MethodMeta {
+    pub execution_time: f64,
+    pub timestamp: String,
+    pub method_name: String,
 }
 
 impl Utils {
