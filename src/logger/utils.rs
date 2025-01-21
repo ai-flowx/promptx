@@ -1,6 +1,6 @@
 use chrono::Utc;
 use serde::Serialize;
-use serde_json::{json, Map, Value};
+use serde_json::{Map, Value};
 use std::collections::HashMap;
 use std::io;
 use std::time::Instant;
@@ -74,8 +74,4 @@ impl<T: Serialize> ToInputs for MethodArgs<T> {
         }
         Value::Object(inputs)
     }
-}
-
-pub fn args_to_json<T: Serialize>(args: &T) -> Value {
-    json!(args)
 }
