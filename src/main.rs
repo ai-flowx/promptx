@@ -28,12 +28,5 @@ fn main() {
         process::exit(-2);
     }
 
-    let mut l = Logger {
-        ..Default::default()
-    };
-
-    if let Err(err) = l.run() {
-        println!("failed to run logger: {}", err);
-        process::exit(-3);
-    }
+    let _ = Logger::new("");
 }
