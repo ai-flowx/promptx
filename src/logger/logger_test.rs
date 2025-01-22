@@ -1,3 +1,4 @@
+use super::constants::*;
 use super::file_utils::*;
 use super::logger::*;
 use serde_json::json;
@@ -83,10 +84,13 @@ fn test_append_to_chained_log() {
     assert_eq!(logger.chained_log.len(), 1);
 
     let log_entry = &logger.chained_log[0];
-    assert_eq!(log_entry["outputs"], json!(42));
-    assert_eq!(log_entry["meta"]["method_name"], "test_method");
-    assert!(log_entry["meta"]["exec_sec"].is_number());
-    assert!(log_entry["meta"]["timestamp"].is_string());
+    assert_eq!(log_entry[Constants::OUTPUTS], json!(42));
+    assert_eq!(
+        log_entry[Constants::META][Constants::METHOD_NAME],
+        "test_method"
+    );
+    assert!(log_entry[Constants::META][Constants::EXEC_SEC].is_number());
+    assert!(log_entry[Constants::META][Constants::TIMESTAMP].is_string());
 }
 
 #[test]
@@ -128,10 +132,10 @@ fn test_run_over_logs() -> io::Result<()> {
 
     let input_path = temp_dir.path().join("input.jsonl");
     let test_input = json!({
-        "id": "test_id",
-        "inputs": {"input": "test"},
-        "outputs": {"output": "test"},
-        "meta": {"meta": "test"}
+        Constants::ID: "test_id",
+        Constants::INPUTS: {"input": "test"},
+        Constants::OUTPUTS: {"output": "test"},
+        Constants::META: {"meta": "test"}
     });
     FileUtils::append_as_jsonl(&input_path, &test_input)?;
 
@@ -142,7 +146,7 @@ fn test_run_over_logs() -> io::Result<()> {
             assert_eq!(inputs["input"], "test");
             assert_eq!(outputs["output"], "test");
             assert_eq!(meta["meta"], "test");
-            "eval_result"
+            Constants::EVAL_RESULT
         },
         &input_path,
     )?;
