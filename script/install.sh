@@ -1,7 +1,10 @@
 #!/bin/bash
 
-# Install for gcc-mingw
+# Install gcc-mingw
 sudo apt install --yes --no-install-recommends gcc-mingw-w64-x86-64-win32
+
+# Install libssl-dev
+sudo apt install --yes --no-install-recommends libssl-dev pkg-config
 
 # Install rustup
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
