@@ -58,8 +58,10 @@ Project License can be found [here](LICENSE).
 ## Reference
 
 - [aosp-promptx](https://android-review.googlesource.com/c/platform/manifest/+/3456966)
+- [promptfoo](https://github.com/promptfoo/promptfoo)
 - [prompthancer](https://prompthancer.com/)
 - [promptperfect](https://promptperfect.jina.ai/)
+- [prompttools](https://github.com/hegelai/prompttools)
 - [promptwizard](https://github.com/microsoft/PromptWizard)
 - [promptwizard](https://github.com/craftslab/promptwizard)
 - [textpod](https://github.com/freetonik/textpod)
