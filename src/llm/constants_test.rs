@@ -14,8 +14,8 @@ fn test_commonlogsstr() {
 
 #[test]
 fn test_dirnames() {
-    assert_eq!(DirNames::MODEL_DIR, "model");
-    assert_eq!(DirNames::PACKAGE_BASE_DIR, "/path/to/packages");
+    assert_eq!(DirNames::MODEL_DIR, "/tmp/model");
+    assert_eq!(DirNames::PACKAGE_BASE_DIR, "/tmp/packages");
 }
 
 #[test]

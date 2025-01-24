@@ -11,8 +11,8 @@ impl CommonLogsStr {
 pub struct DirNames {}
 
 impl DirNames {
-    pub const MODEL_DIR: &'static str = "model";
-    pub const PACKAGE_BASE_DIR: &'static str = "/path/to/packages";
+    pub const MODEL_DIR: &'static str = "/tmp/model";
+    pub const PACKAGE_BASE_DIR: &'static str = "/tmp/packages";
 }
 
 #[derive(Clone, Default)]
