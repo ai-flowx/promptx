@@ -1,6 +1,6 @@
 [package]
 name = "promptx"
-version = "0.1.0"
+version = "0.2.0"
 edition = "2021"
 rust-version = "1.83.0"
 authors = ["Jia Jia <angersax@sina.com>"]
@@ -29,6 +29,7 @@ strip = "debuginfo"
 anyhow = "1.0"
 chrono = "0.4"
 clap = "4.5"
+libloading = "0.8.6"
 log = "0.4"
 log4rs = "1.3"
 reqwest = "0.12"
