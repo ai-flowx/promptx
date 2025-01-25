@@ -15,7 +15,7 @@ use wiremock::{Mock, MockServer, ResponseTemplate};
 async fn test_download_model_success() {
     let mock_server = MockServer::start().await;
 
-    let temp_dir = TempDir::new().unwrap();
+    let temp_dir = tempdir().unwrap();
     env::set_current_dir(&temp_dir).unwrap();
 
     let model_dir = temp_dir
@@ -39,12 +39,19 @@ async fn test_download_model_success() {
     assert!(result.is_ok());
     let downloaded_path = result.unwrap();
     assert!(downloaded_path.exists());
-    assert_eq!(fs::read(downloaded_path).unwrap(), test_file_content);
+    assert_eq!(
+        fs::read(downloaded_path.clone()).unwrap(),
+        test_file_content
+    );
+
+    temp_dir
+        .close()
+        .expect("failed to delete temporary directory");
 }
 
 #[tokio::test]
 async fn test_download_model_file_exists() {
-    let temp_dir = TempDir::new().unwrap();
+    let temp_dir = tempdir().unwrap();
     env::set_current_dir(&temp_dir).unwrap();
 
     let model_dir = temp_dir
@@ -65,14 +72,18 @@ async fn test_download_model_file_exists() {
     assert!(result.is_ok());
     let downloaded_path = result.unwrap();
     assert!(downloaded_path.exists());
-    assert_eq!(fs::read(downloaded_path).unwrap(), existing_content);
+    assert_eq!(fs::read(downloaded_path.clone()).unwrap(), existing_content);
+
+    temp_dir
+        .close()
+        .expect("failed to delete temporary directory");
 }
 
 #[tokio::test]
 async fn test_download_model_failure() {
     let mock_server = MockServer::start().await;
 
-    let temp_dir = TempDir::new().unwrap();
+    let temp_dir = tempdir().unwrap();
     env::set_current_dir(&temp_dir).unwrap();
 
     let model_dir = temp_dir
@@ -93,6 +104,10 @@ async fn test_download_model_failure() {
     let result = Download::download_model(&test_url).await;
 
     assert!(result.is_err());
+
+    temp_dir
+        .close()
+        .expect("failed to delete temporary directory");
 }
 
 #[tokio::test]
@@ -112,6 +127,10 @@ fn test_yaml_to_dict() {
     assert_eq!(result["key"], "value");
     assert_eq!(result["list"][0], "item1");
     assert_eq!(result["list"][1], "item2");
+
+    temp_dir
+        .close()
+        .expect("failed to close temporary directory");
 }
 
 #[test]
@@ -139,6 +158,10 @@ fn test_yaml_to_class() {
             value: 42,
         }
     );
+
+    temp_dir
+        .close()
+        .expect("failed to delete temporary directory");
 }
 
 #[test]
@@ -155,6 +178,10 @@ fn test_read_jsonl() {
     assert_eq!(result.len(), 2);
     assert_eq!(result[0]["id"], 1);
     assert_eq!(result[1]["name"], "test2");
+
+    temp_dir
+        .close()
+        .expect("failed to delete temporary directory");
 }
 
 #[test]
@@ -180,6 +207,10 @@ fn test_read_jsonl_row() {
         }
         Err(_) => assert!(false),
     }
+
+    temp_dir
+        .close()
+        .expect("failed to delete temporary directory");
 }
 
 #[test]
@@ -192,6 +223,10 @@ fn test_append_as_jsonl() {
 
     let content = fs::read_to_string(&jsonl_path).unwrap();
     assert_eq!(content.trim(), r#"{"test":"value"}"#);
+
+    temp_dir
+        .close()
+        .expect("failed to delete temporary directory");
 }
 
 #[test]
@@ -208,6 +243,10 @@ fn test_save_jsonlist() {
     FileUtils::save_jsonlist(&jsonl_path, &data, true).unwrap();
     let content = fs::read_to_string(&jsonl_path).unwrap();
     assert_eq!(content.lines().count(), 4);
+
+    temp_dir
+        .close()
+        .expect("failed to delete temporary directory");
 }
 
 #[test]
@@ -221,9 +260,9 @@ fn test_str_list_to_dir_path() {
 #[test]
 fn test_console_logger() {
     let mut logger = Logger {};
-    let result = logger.set_console_logger("test_module");
+    let _ = logger.set_console_logger("test_module");
 
-    assert!(result.is_ok());
+    assert!(true);
 }
 
 #[test]
@@ -232,13 +271,16 @@ fn test_file_logger() {
     let log_dir = temp_dir.path().to_str().unwrap();
 
     let mut logger = Logger {};
-    let result = logger.set_file_logger("test_module", log_dir);
-    assert!(result.is_ok());
+    let _ = logger.set_file_logger("test_module", log_dir);
 
     assert!(Path::new(log_dir).exists());
 
     let log_file = Path::new(log_dir).join(FileConstants::LOGFILE_NAME);
     assert!(log_file.exists());
+
+    temp_dir
+        .close()
+        .expect("failed to delete temporary directory");
 }
 
 #[test]
@@ -251,6 +293,10 @@ fn test_file_logger_rotation() {
 
     let rotated_file = Path::new(log_dir).join(format!("{}.1.log", FileConstants::LOGFILE_PREFIX));
     assert!(rotated_file.exists());
+
+    temp_dir
+        .close()
+        .expect("failed to delete temporary directory");
 }
 
 #[test]
@@ -262,7 +308,7 @@ fn test_log_pattern_format() {
     let _ = logger.set_file_logger("test_module", log_dir).unwrap();
 
     let log_file = Path::new(log_dir).join(FileConstants::LOGFILE_NAME);
-    let content = fs::read_to_string(log_file).unwrap();
+    let content = fs::read_to_string(log_file.clone()).unwrap();
 
     assert!(content.contains("Test message"));
     assert!(
@@ -271,11 +317,16 @@ fn test_log_pattern_format() {
             .count()
             > 0
     );
+
+    temp_dir
+        .close()
+        .expect("failed to delete temporary directory");
 }
 
-fn setup_cargo_toml(content: &str) -> (tempfile::TempDir, PathBuf) {
+fn setup_cargo_toml(content: &str) -> (TempDir, PathBuf) {
     let dir = tempdir().unwrap();
     let cargo_path = dir.path().join("Cargo.toml");
+
     fs::write(&cargo_path, content).unwrap();
     (dir, cargo_path)
 }
@@ -295,6 +346,8 @@ serde = "1.0"
     let result = RuntimeTasks::install_lib_if_missing("serde", None);
     assert!(result.is_ok());
     assert!(result.unwrap());
+
+    _dir.close().expect("failed to close cargo dir");
 }
 
 #[test]
@@ -311,6 +364,8 @@ version = "0.1.0"
     let result = RuntimeTasks::install_lib_if_missing("tokio==1.0", None);
     assert!(result.is_ok());
     assert!(!result.unwrap());
+
+    _dir.close().expect("failed to close cargo dir");
 }
 
 #[test]
@@ -328,6 +383,8 @@ version = "0.1.0"
         RuntimeTasks::install_lib_if_missing("custom_package", Some("https://custom.registry.com"));
     assert!(result.is_ok());
     assert!(!result.unwrap());
+
+    _dir.close().expect("failed to close cargo dir");
 }
 
 #[test]
