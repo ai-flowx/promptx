@@ -1,28 +1,22 @@
 use super::constants::*;
 use anyhow::{Context, Result};
-use libloading::Library;
 use log::{LevelFilter, SetLoggerError};
 use reqwest::Client;
 use serde::{Deserialize, Serialize};
 use serde_json;
 use serde_yaml::Value;
-use std::error::Error;
 use std::fs::{self, File, OpenOptions};
 use std::io;
 use std::io::{BufRead, BufReader, Write};
 use std::path::{Path, PathBuf};
-use std::process::Command;
 use url::Url;
 
 use log4rs::{
-    append::{
-        console::ConsoleAppender,
-        rolling_file::{
-            policy::compound::{
-                roll::fixed_window::FixedWindowRoller, trigger::size::SizeTrigger, CompoundPolicy,
-            },
-            RollingFileAppender,
+    append::rolling_file::{
+        policy::compound::{
+            roll::fixed_window::FixedWindowRoller, trigger::size::SizeTrigger, CompoundPolicy,
         },
+        RollingFileAppender,
     },
     config::{Appender, Config, Root},
     encode::pattern::PatternEncoder,
@@ -260,86 +254,5 @@ impl Logger {
             .unwrap();
 
         log4rs::init_config(config)
-    }
-}
-
-#[derive(Debug)]
-pub enum RuntimeError {
-    PackageNotFound(String),
-    InstallationError(String),
-    ValidationError(String),
-    ModuleLoadError(String),
-}
-
-impl std::fmt::Display for RuntimeError {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        match self {
-            RuntimeError::PackageNotFound(msg) => write!(f, "Package not found: {}", msg),
-            RuntimeError::InstallationError(msg) => write!(f, "Installation error: {}", msg),
-            RuntimeError::ValidationError(msg) => write!(f, "Validation error: {}", msg),
-            RuntimeError::ModuleLoadError(msg) => write!(f, "Module load error: {}", msg),
-        }
-    }
-}
-
-impl Error for RuntimeError {}
-
-#[derive(Clone, Default)]
-pub struct RuntimeTasks {}
-
-impl RuntimeTasks {
-    pub fn install_lib_if_missing(
-        lib_name: &str,
-        find_links: Option<&str>,
-    ) -> Result<bool, RuntimeError> {
-        let (package_name, _) = if let Some((name, ver)) = lib_name.split_once("==") {
-            (name, Some(ver))
-        } else {
-            (lib_name, None)
-        };
-
-        let cargo_toml = Path::new("Cargo.toml");
-        if cargo_toml.exists() {
-            let content = fs::read_to_string(cargo_toml)
-                .map_err(|e| RuntimeError::PackageNotFound(e.to_string()))?;
-
-            if content.contains(package_name) {
-                // TODO: Add version checking
-                return Ok(true);
-            }
-        }
-
-        let mut cmd = Command::new("cargo");
-        cmd.arg("add").arg(package_name);
-
-        if let Some(links) = find_links {
-            cmd.arg("--registry").arg(links);
-        }
-
-        match cmd.output() {
-            Ok(output) if output.status.success() => Ok(false),
-            Ok(output) => Err(RuntimeError::InstallationError(
-                String::from_utf8_lossy(&output.stderr).to_string(),
-            )),
-            Err(e) => Err(RuntimeError::InstallationError(e.to_string())),
-        }
-    }
-
-    pub fn str_to_class(
-        import_path: Option<&str>,
-        file_path: Option<&Path>,
-    ) -> Result<Library, RuntimeError> {
-        if let Some(path) = import_path {
-            let lib_path = PathBuf::from(path).with_extension(std::env::consts::DLL_EXTENSION);
-            unsafe {
-                Library::new(lib_path).map_err(|e| RuntimeError::ModuleLoadError(e.to_string()))
-            }
-        } else if let Some(path) = file_path {
-            unsafe { Library::new(path).map_err(|e| RuntimeError::ModuleLoadError(e.to_string())) }
-        } else {
-            Err(RuntimeError::ModuleLoadError(
-                "Loading from current module not implemented".to_string(),
-            ))
-        }
     }
 }

@@ -7,7 +7,6 @@ use std::env;
 use std::fs;
 use std::path::{Path, PathBuf};
 use tempfile::tempdir;
-use tempfile::TempDir;
 use tokio;
 use wiremock::matchers::{method, path};
 use wiremock::{Mock, MockServer, ResponseTemplate};
@@ -279,105 +278,4 @@ fn test_logger() {
     temp_dir
         .close()
         .expect("failed to delete temporary directory");
-}
-
-fn setup_cargo_toml(content: &str) -> (TempDir, PathBuf) {
-    let dir = tempdir().unwrap();
-    let cargo_path = dir.path().join("Cargo.toml");
-
-    fs::write(&cargo_path, content).unwrap();
-    (dir, cargo_path)
-}
-
-#[test]
-fn test_install_lib_existing_package() {
-    let content = r#"
-[package]
-name = "test_package"
-version = "0.1.0"
-
-[dependencies]
-serde = "1.0"
-"#;
-    let (_dir, _cargo_path) = setup_cargo_toml(content);
-
-    let result = RuntimeTasks::install_lib_if_missing("serde", None);
-    assert!(result.is_ok());
-    assert!(result.unwrap());
-
-    _dir.close().expect("failed to close cargo dir");
-}
-
-#[test]
-fn test_install_lib_with_version() {
-    let content = r#"
-[package]
-name = "test_package"
-version = "0.1.0"
-
-[dependencies]
-"#;
-    let (_dir, _cargo_path) = setup_cargo_toml(content);
-
-    let result = RuntimeTasks::install_lib_if_missing("tokio==1.0", None);
-    assert!(result.is_ok());
-    assert!(!result.unwrap());
-
-    _dir.close().expect("failed to close cargo dir");
-}
-
-#[test]
-fn test_install_lib_with_registry() {
-    let content = r#"
-[package]
-name = "test_package"
-version = "0.1.0"
-
-[dependencies]
-"#;
-    let (_dir, _cargo_path) = setup_cargo_toml(content);
-
-    let result =
-        RuntimeTasks::install_lib_if_missing("custom_package", Some("https://custom.registry.com"));
-    assert!(result.is_ok());
-    assert!(!result.unwrap());
-
-    _dir.close().expect("failed to close cargo dir");
-}
-
-#[test]
-fn test_str_to_class_import_path() {
-    let lib_path = "dummy_lib";
-    let result = RuntimeTasks::str_to_class(Some(lib_path), None);
-    assert!(result.is_err());
-    matches!(result.unwrap_err(), RuntimeError::ModuleLoadError(_));
-}
-
-#[test]
-fn test_str_to_class_file_path() {
-    let path = Path::new("dummy_lib");
-    let result = RuntimeTasks::str_to_class(None, Some(path));
-    assert!(result.is_err());
-    matches!(result.unwrap_err(), RuntimeError::ModuleLoadError(_));
-}
-
-#[test]
-fn test_str_to_class_no_path() {
-    let result = RuntimeTasks::str_to_class(None, None);
-    assert!(result.is_err());
-    matches!(result.unwrap_err(), RuntimeError::ModuleLoadError(_));
-}
-
-#[test]
-fn test_runtime_error_display() {
-    let errors = vec![
-        RuntimeError::PackageNotFound("test".to_string()),
-        RuntimeError::InstallationError("test".to_string()),
-        RuntimeError::ValidationError("test".to_string()),
-        RuntimeError::ModuleLoadError("test".to_string()),
-    ];
-
-    for error in errors {
-        assert!(!error.to_string().is_empty());
-    }
 }
