@@ -222,41 +222,14 @@ impl FileUtils {
 pub struct Logger {}
 
 impl Logger {
-    pub fn set_console_logger(
-        &mut self,
-        module_name: &str,
-    ) -> std::result::Result<Handle, SetLoggerError> {
-        let pattern = "{d(%Y-%m-%d,%H:%M:%S)}.{ms:03} | {M} | {f}:\n{m}\n";
-
-        let console_appender = ConsoleAppender::builder()
-            .encoder(Box::new(PatternEncoder::new(pattern)))
-            .build();
-
-        let console = Appender::builder().build(
-            &format!("{}_console", module_name),
-            Box::new(console_appender),
-        );
-
-        let config = Config::builder()
-            .appender(console)
-            .build(
-                Root::builder()
-                    .appender(&format!("{}_console", module_name))
-                    .build(LevelFilter::Debug),
-            )
-            .unwrap();
-
-        log4rs::init_config(config)
-    }
-
-    pub fn set_file_logger(
+    pub fn set_logger(
         &mut self,
         module_name: &str,
         log_dirpath: &str,
     ) -> std::result::Result<Handle, SetLoggerError> {
         fs::create_dir_all(log_dirpath).expect("Failed to create log dir");
 
-        let pattern = "{d(%Y-%m-%d,%H:%M:%S)}.{ms:03} | {M} | {f}:\n{m}\n";
+        let pattern = "{d} - {l} - {m}{n}";
         let log_path = Path::new(log_dirpath).join(FileConstants::LOGFILE_NAME);
 
         let roller = FixedWindowRoller::builder()

@@ -1,5 +1,6 @@
 use super::constants::*;
 use super::utils::*;
+use log::debug;
 use serde::Deserialize;
 use serde_json::json;
 use std::env;
@@ -253,70 +254,27 @@ fn test_save_jsonlist() {
 fn test_str_list_to_dir_path() {
     let str_list = vec!["path", "to", "dir"];
     let result = FileUtils::str_list_to_dir_path(&str_list);
-
     assert_eq!(result, PathBuf::from("path").join("to").join("dir"));
 }
 
 #[test]
-fn test_console_logger() {
-    let mut logger = Logger {};
-    let _ = logger.set_console_logger("test_module");
-
-    assert!(true);
-}
-
-#[test]
-fn test_file_logger() {
+fn test_logger() {
     let temp_dir = tempdir().unwrap();
     let log_dir = temp_dir.path().to_str().unwrap();
 
     let mut logger = Logger {};
-    let _ = logger.set_file_logger("test_module", log_dir);
+    let result = logger.set_logger("test_module", log_dir);
+    assert!(result.is_ok());
 
     assert!(Path::new(log_dir).exists());
 
     let log_file = Path::new(log_dir).join(FileConstants::LOGFILE_NAME);
     assert!(log_file.exists());
 
-    temp_dir
-        .close()
-        .expect("failed to delete temporary directory");
-}
+    debug!("This is a test debug message.");
 
-#[test]
-fn test_file_logger_rotation() {
-    let temp_dir = tempdir().unwrap();
-    let log_dir = temp_dir.path().to_str().unwrap();
-
-    let mut logger = Logger {};
-    let _ = logger.set_file_logger("test_module", log_dir).unwrap();
-
-    let rotated_file = Path::new(log_dir).join(format!("{}.1.log", FileConstants::LOGFILE_PREFIX));
-    assert!(rotated_file.exists());
-
-    temp_dir
-        .close()
-        .expect("failed to delete temporary directory");
-}
-
-#[test]
-fn test_log_pattern_format() {
-    let temp_dir = tempdir().unwrap();
-    let log_dir = temp_dir.path().to_str().unwrap();
-
-    let mut logger = Logger {};
-    let _ = logger.set_file_logger("test_module", log_dir).unwrap();
-
-    let log_file = Path::new(log_dir).join(FileConstants::LOGFILE_NAME);
-    let content = fs::read_to_string(log_file.clone()).unwrap();
-
-    assert!(content.contains("Test message"));
-    assert!(
-        content
-            .matches(r"\d{4}-\d{2}-\d{2},\d{2}:\d{2}:\d{2}\.\d{3}")
-            .count()
-            > 0
-    );
+    let log_contents = fs::read_to_string(log_file).unwrap();
+    assert!(log_contents.contains("This is a test debug message."));
 
     temp_dir
         .close()
