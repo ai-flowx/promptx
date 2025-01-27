@@ -13,7 +13,17 @@ pub struct Config {
 
 #[allow(non_snake_case)]
 #[derive(Clone, Default, Deserialize, Serialize)]
-pub struct ConfigData {}
+pub struct ConfigData {
+    pub llm: Vec<ConfigLLM>,
+}
+
+#[derive(Clone, Default, Deserialize, Serialize)]
+pub struct ConfigLLM {
+    pub name: String,
+    pub api: String,
+    pub key: String,
+    pub endpoint: String,
+}
 
 impl Config {
     pub fn build(&mut self) -> Result<(), Box<dyn Error>> {

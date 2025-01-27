@@ -23,13 +23,3 @@ impl LLMOutputTypes {
     pub const EMBEDDINGS: &'static str = "embeddings";
     pub const MULTI_MODAL: &'static str = "multimodal";
 }
-
-#[derive(Clone, Default)]
-pub struct OAILiterals {}
-
-impl OAILiterals {
-    pub const OPENAI_API_KEY: &'static str = "OPENAI_API_KEY";
-    pub const OPENAI_API_BASE: &'static str = "OPENAI_API_BASE";
-    pub const OPENAI_API_TYPE: &'static str = "OPENAI_API_TYPE";
-    pub const OPENAI_API_VERSION: &'static str = "OPENAI_API_VERSION";
-}

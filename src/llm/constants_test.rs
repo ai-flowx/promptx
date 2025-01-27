@@ -19,11 +19,3 @@ fn test_llmoutputtypes() {
     assert_eq!(LLMOutputTypes::EMBEDDINGS, "embeddings");
     assert_eq!(LLMOutputTypes::MULTI_MODAL, "multimodal");
 }
-
-#[test]
-fn test_oailiterals() {
-    assert_eq!(OAILiterals::OPENAI_API_KEY, "OPENAI_API_KEY");
-    assert_eq!(OAILiterals::OPENAI_API_BASE, "OPENAI_API_BASE");
-    assert_eq!(OAILiterals::OPENAI_API_TYPE, "OPENAI_API_TYPE");
-    assert_eq!(OAILiterals::OPENAI_API_VERSION, "OPENAI_API_VERSION");
-}

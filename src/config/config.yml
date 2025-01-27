@@ -1,0 +1,9 @@
+llm:
+  - name: doubao
+    api: https://ark.cn-beijing.volces.com/api/v3/chat/completions
+    key: 8429f8ab-*
+    endpoint: ep-*
+  - name: openai
+    api: https://api.openai.com/v1/chat/completions
+    key: 9429f8ab-*
+    endpoint: ep-*

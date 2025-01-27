@@ -31,4 +31,6 @@ fn main() {
     }
 
     let _ = Logger::new("");
+
+    let _ = LLM::new(c.config_data);
 }

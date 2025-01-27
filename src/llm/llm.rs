@@ -1,17 +1,12 @@
+use crate::config::config::{ConfigData, ConfigLLM};
 use reqwest::Client;
 use serde::{Deserialize, Serialize};
-use std::env;
 use std::error::Error;
 
 #[derive(Clone, Default)]
 pub struct LLM {
-    client: Client,
-}
-
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct Config {
-    key: String,
-    endpoint: String,
+    pub config: ConfigData,
+    pub client: Client,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -21,31 +16,38 @@ pub struct Message {
 }
 
 impl LLM {
-    pub fn new() -> Self {
+    pub fn new(config: ConfigData) -> Self {
         LLM {
+            config,
             client: Client::new(),
         }
     }
 
-    pub async fn chat_completion(&self, messages: Vec<Message>) -> Result<String, Box<dyn Error>> {
-        let model_type = env::var("MODEL_TYPE").unwrap_or_else(|_| "openai".to_string());
+    pub async fn chat_completion(
+        &self,
+        name: String,
+        messages: Vec<Message>,
+    ) -> Result<String, Box<dyn Error>> {
+        let llm = self.config.llm.iter().find(|x| x.name == name).unwrap();
 
-        match model_type.as_str() {
-            "openai" => self.call_openai_api(messages).await,
-            _ => Err("Unsupported model type".into()),
+        match name.as_str() {
+            "doubao" => self.call_openai_api(llm.clone(), messages).await,
+            "openai" => self.call_openai_api(llm.clone(), messages).await,
+            _ => Err("Unsupported llm name".into()),
         }
     }
 
-    async fn call_openai_api(&self, messages: Vec<Message>) -> Result<String, Box<dyn Error>> {
-        let api_key = env::var("OPENAI_API_KEY")?;
-        let model = env::var("OPENAI_MODEL_NAME")?;
-
+    async fn call_openai_api(
+        &self,
+        config: ConfigLLM,
+        messages: Vec<Message>,
+    ) -> Result<String, Box<dyn Error>> {
         let response = self
             .client
-            .post("https://api.openai.com/v1/chat/completions")
-            .header("Authorization", format!("Bearer {}", api_key))
+            .post(config.api.clone())
+            .header("Authorization", format!("Bearer {}", config.key))
             .json(&serde_json::json!({
-                "model": model,
+                "model": config.endpoint,
                 "messages": messages,
                 "temperature": 0.0
             }))
@@ -60,8 +62,7 @@ impl LLM {
     }
 
     pub fn list_model_type(&self) -> Vec<String> {
-        // TBD: FIXME
-        Vec::new()
+        self.config.llm.iter().map(|x| x.name.clone()).collect()
     }
 }
 

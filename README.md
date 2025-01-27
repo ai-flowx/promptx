@@ -45,6 +45,15 @@ Options:
 An example of configuration in [config.yml](https://github.com/ai-flowx/promptx/blob/main/src/config/config.yml):
 
 ```yaml
+llm:
+  - name: doubao
+    api: https://ark.cn-beijing.volces.com/api/v3/chat/completions
+    key: 8429f8ab-*
+    endpoint: ep-*
+  - name: openai
+    api: https://api.openai.com/v1/chat/completions
+    key: 9429f8ab-*
+    endpoint: ep-*
 ```
 
 
