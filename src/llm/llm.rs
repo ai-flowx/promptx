@@ -11,8 +11,8 @@ pub struct LLM {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Message {
-    role: String,
-    content: String,
+    pub role: String,
+    pub content: String,
 }
 
 impl LLM {
@@ -28,6 +28,10 @@ impl LLM {
         name: String,
         messages: Vec<Message>,
     ) -> Result<String, Box<dyn Error>> {
+        if self.config.llm.is_empty() {
+            return Err("No language model is configured".into());
+        }
+
         let llm = self.config.llm.iter().find(|x| x.name == name).unwrap();
 
         match name.as_str() {
@@ -37,7 +41,7 @@ impl LLM {
         }
     }
 
-    async fn call_openai_api(
+    pub async fn call_openai_api(
         &self,
         config: ConfigLLM,
         messages: Vec<Message>,
@@ -62,6 +66,10 @@ impl LLM {
     }
 
     pub fn list_model_type(&self) -> Vec<String> {
+        if self.config.llm.is_empty() {
+            return vec![];
+        }
+
         self.config.llm.iter().map(|x| x.name.clone()).collect()
     }
 }
