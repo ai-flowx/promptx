@@ -58,6 +58,15 @@ llm:
 
 
 
+## Android
+
+```bash
+export ANDROID_NDK_ROOT=/path/to/android_ndk_root
+cargo ndk -t aarch64-linux-android build --release
+```
+
+
+
 ## License
 
 Project License can be found [here](LICENSE).
@@ -67,6 +76,7 @@ Project License can be found [here](LICENSE).
 ## Reference
 
 - [aosp-promptx](https://android-review.googlesource.com/c/platform/manifest/+/3456966)
+- [bindings-to-openssl](https://docs.rs/openssl/latest/openssl/)
 - [promptfoo](https://github.com/promptfoo/promptfoo)
 - [prompthancer](https://prompthancer.com/)
 - [promptperfect](https://promptperfect.jina.ai/)

@@ -3,6 +3,9 @@ TYPE=$(type)
 
 .PHONY: FORCE
 
+android: rs-android
+.PHONY: android
+
 build: rs-build
 .PHONY: build
 
@@ -18,6 +21,9 @@ lint: rs-lint
 test: rs-test
 .PHONY: test
 
+
+rs-android: FORCE
+	./script/android.sh $(ANDROID_NDK_ROOT)
 
 rs-build: FORCE
 	./script/build.sh $(TYPE)

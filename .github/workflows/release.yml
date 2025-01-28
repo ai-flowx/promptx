@@ -31,8 +31,6 @@ jobs:
       - name: Install
         run: make install
       - name: Build
-        env:
-          OPENSSL_DIR: /usr/include/openssl
         run: cargo ndk -t aarch64-linux-android build --release
       - name: Zip
         run: zip -j ${{ env.TARGET_NAME }}-linux-aarch64.zip target/aarch64-linux-android/release/${{ env.TARGET_NAME }}
