@@ -2,11 +2,13 @@ mod arg;
 mod config;
 mod llm;
 mod logger;
+mod optimizer;
 
 use arg::arg::Argument;
 use config::config::Config;
 use llm::llm::LLM;
 use logger::logger::Logger;
+use optimizer::optimizer::Optimizer;
 use std::process;
 
 fn main() {
@@ -30,7 +32,7 @@ fn main() {
         process::exit(-2);
     }
 
+    let _ = LLM::new(c.config_data.clone());
     let _ = Logger::new("");
-
-    let _ = LLM::new(c.config_data);
+    let _ = Optimizer::new(c.config_data.clone());
 }

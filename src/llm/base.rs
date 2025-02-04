@@ -1,6 +1,8 @@
 use serde::{Deserialize, Serialize};
 use std::fmt::{Debug, Display, Formatter, Result};
 
+pub trait UniversalBase: Display {}
+
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct LLMModel {
     pub unique_model_id: String,
